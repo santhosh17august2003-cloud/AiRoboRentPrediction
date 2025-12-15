@@ -12,12 +12,15 @@ model2 = pickle.load(open("model.pkl", "rb"))
 @app.route("/register", methods=["POST"])
 def register():
     data = request.json
+    username = data["username"]
     password = data["password"]
     if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
             return jsonify({
             "message": "Password must contain at least one special character"
         }), 400
-
+    existing_user = collection.find_one({"username": username})
+    if existing_user:
+        return jsonify({"message": "Username already exists"}),
     user = {
         "name": data["name"],
         "email": data["email"],
@@ -46,7 +49,7 @@ def login():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.json   # 👈 receive JSON from React
+    data = request.json   
 
     num_robots = int(data["num_robots"])
     hour = int(data["hour"])
