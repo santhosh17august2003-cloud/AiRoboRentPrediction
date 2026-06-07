@@ -4,7 +4,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "app.py": {
-      "runtime": "@vercel/python",
       "excludeFiles": "{ML.ipynb,high_score_dataset.csv,__pycache__/**,*.pyc}"
     }
   },
