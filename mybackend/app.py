@@ -5,11 +5,20 @@ from flask_cors import CORS
 from pathlib import Path
 from db import collection
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
 import re
 
 MODEL_PATH = Path(__file__).with_name("model.pkl")
 model2 = pickle.load(open(MODEL_PATH, "rb"))
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"})
 
 @app.route("/register", methods=["POST"])
 def register():
