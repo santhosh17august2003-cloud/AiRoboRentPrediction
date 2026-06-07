@@ -3,6 +3,7 @@ import Register from './Register';
 import Login from './Login'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from 'react';
+import { apiUrl } from './api';
 
 function App() {
   const [numRobots, setNumRobots] = useState("");
@@ -13,7 +14,7 @@ function App() {
   const handlepredict  = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://127.0.0.1:5000/predict",{
+    const response = await fetch(apiUrl("/predict"),{
       method: "POST",
       headers:{
         "Content-Type": "application/json",

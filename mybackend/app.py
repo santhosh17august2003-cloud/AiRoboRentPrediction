@@ -2,12 +2,14 @@ import numpy as np
 from flask import Flask, request, jsonify
 import pickle
 from flask_cors import CORS
+from pathlib import Path
 from db import collection
 app = Flask(__name__)
 CORS(app)
 import re
 
-model2 = pickle.load(open("model.pkl", "rb"))
+MODEL_PATH = Path(__file__).with_name("model.pkl")
+model2 = pickle.load(open(MODEL_PATH, "rb"))
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -20,7 +22,7 @@ def register():
         }), 400
     existing_user = collection.find_one({"username": username})
     if existing_user:
-        return jsonify({"message": "Username already exists"}),
+        return jsonify({"message": "Username already exists"}), 409
     user = {
         "name": data["name"],
         "email": data["email"],

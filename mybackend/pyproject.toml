@@ -5,9 +5,14 @@ description = "This project is about predicting rent"
 authors = [
     {name = "santhosh17august2003-cloud",email = "santhosh17august2003@gmail.com"}
 ]
-readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "Flask==3.1.2",
+    "flask-cors==6.0.2",
+    "pymongo==4.15.5",
+    "dnspython==2.8.0",
+    "numpy==2.3.5",
+    "scikit-learn==1.8.0",
 ]
 
 
