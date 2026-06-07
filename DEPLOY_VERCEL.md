@@ -1,29 +1,10 @@
 # Deploying to Vercel
 
-Deploy this repository as two Vercel projects.
+Deploy the React app and Vercel API functions as one Vercel project.
 
-## 1. Backend
+## Vercel Project
 
-Create a new Vercel project from the same GitHub repository and set:
-
-- Root Directory: `mybackend`
-- Framework Preset: `Other`
-- Build Command: leave empty
-- Output Directory: leave empty
-
-Add this Environment Variable in Vercel:
-
-- `MONGODB_URI`: your MongoDB Atlas connection string
-
-After deployment, copy the backend URL, for example:
-
-```text
-https://your-backend-project.vercel.app
-```
-
-## 2. Frontend
-
-Create another Vercel project from the same GitHub repository and set:
+Create a Vercel project from the GitHub repository and set:
 
 - Root Directory: `myfrontend`
 - Framework Preset: `Create React App`
@@ -32,9 +13,21 @@ Create another Vercel project from the same GitHub repository and set:
 
 Add this Environment Variable in Vercel:
 
-- `REACT_APP_API_URL`: the backend URL from step 1
+- `MONGODB_URI`: your MongoDB Atlas connection string
 
-Redeploy the frontend after adding `REACT_APP_API_URL`.
+Do not set `REACT_APP_API_URL` for the Vercel deployment unless you are using a separate backend. Without it, the frontend calls the same-site API functions at `/api/register`, `/api/login`, and `/api/predict`.
+
+After deployment, test:
+
+```text
+https://your-vercel-project.vercel.app/api/health
+```
+
+It should return:
+
+```json
+{"status": "ok"}
+```
 
 ## Local Development
 
