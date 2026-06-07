@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 import pickle
 from flask_cors import CORS
 from pathlib import Path
-from db import collection
+from api.db import collection
 app = Flask(__name__)
 CORS(
     app,
@@ -13,7 +13,7 @@ CORS(
 )
 import re
 
-MODEL_PATH = Path(__file__).with_name("model.pkl")
+MODEL_PATH = Path(__file__).parent.parent / "model.pkl"
 model2 = pickle.load(open(MODEL_PATH, "rb"))
 
 @app.route("/health", methods=["GET"])
