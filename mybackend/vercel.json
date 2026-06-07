@@ -1,16 +1,14 @@
-
-
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "app.py": {
+    "api/app.py": {
       "excludeFiles": "{ML.ipynb,high_score_dataset.csv,__pycache__/**,*.pyc}"
     }
   },
   "routes": [
     {
       "src": "/(.*)",
-       "dest": "/api/app.py"
+      "dest": "/api/app.py"
     }
   ]
 }
