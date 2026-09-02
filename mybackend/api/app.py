@@ -1,9 +1,12 @@
+import os
+import re
+import pickle
 import numpy as np
 from flask import Flask, request, jsonify
-import pickle
 from flask_cors import CORS
 from pathlib import Path
 from api.db import collection
+
 app = Flask(__name__)
 CORS(
     app,
@@ -11,10 +14,13 @@ CORS(
     methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
-import re
 
 MODEL_PATH = Path(__file__).parent.parent / "model.pkl"
 model2 = pickle.load(open(MODEL_PATH, "rb"))
+
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify({"status": "ok", "message": "Backend server is active"})
 
 @app.route("/health", methods=["GET"])
 def health():
@@ -26,7 +32,7 @@ def register():
     username = data["username"]
     password = data["password"]
     if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-            return jsonify({
+        return jsonify({
             "message": "Password must contain at least one special character"
         }), 400
     existing_user = collection.find_one({"username": username})
@@ -74,4 +80,5 @@ def predict():
     return jsonify({"prediction": output})  
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
