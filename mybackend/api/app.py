@@ -28,56 +28,77 @@ def health():
 
 @app.route("/register", methods=["POST"])
 def register():
-    data = request.json
-    username = data["username"]
-    password = data["password"]
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
-        return jsonify({
-            "message": "Password must contain at least one special character"
-        }), 400
-    existing_user = collection.find_one({"username": username})
-    if existing_user:
-        return jsonify({"message": "Username already exists"}), 409
-    user = {
-        "name": data["name"],
-        "email": data["email"],
-        "username": data["username"],
-        "password": password
-    }
+    try:
+        data = request.json or {}
+        username = data.get("username")
+        password = data.get("password")
+        name = data.get("name")
+        email = data.get("email")
 
-    collection.insert_one(user)
+        if not username or not password:
+            return jsonify({"message": "Username and password are required"}), 400
 
-    return jsonify({"message": "User registered successfully"})
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            return jsonify({
+                "message": "Password must contain at least one special character"
+            }), 400
+
+        existing_user = collection.find_one({"username": username})
+        if existing_user:
+            return jsonify({"message": "Username already exists"}), 409
+
+        user = {
+            "name": name,
+            "email": email,
+            "username": username,
+            "password": password
+        }
+
+        collection.insert_one(user)
+
+        return jsonify({"message": "User registered successfully"})
+    except Exception as e:
+        return jsonify({"message": f"Server error: {str(e)}"}), 500
 
 # Login API
 @app.route("/login", methods=["POST"])
 def login():
-    data = request.json
+    try:
+        data = request.json or {}
+        username = data.get("username")
+        password = data.get("password")
 
-    user = collection.find_one({
-        "username": data["username"],
-        "password": data["password"]
-    })
+        if not username or not password:
+            return jsonify({"message": "Username and password are required"}), 400
 
-    if user:
-        return jsonify({"message": "Login successful"})
-    else:
-        return jsonify({"message": "Incorrect username or password"}), 401
+        user = collection.find_one({
+            "username": username,
+            "password": password
+        })
+
+        if user:
+            return jsonify({"message": "Login successful"})
+        else:
+            return jsonify({"message": "Incorrect username or password"}), 401
+    except Exception as e:
+        return jsonify({"message": f"Server error: {str(e)}"}), 500
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    data = request.json   
+    try:
+        data = request.json or {}
+        num_robots = int(data["num_robots"])
+        hour = int(data["hour"])
+        num_days = int(data["num_days"])
 
-    num_robots = int(data["num_robots"])
-    hour = int(data["hour"])
-    num_days = int(data["num_days"])
+        final_features = np.array([[num_robots, hour, num_days]])
+        prediction = model2.predict(final_features)
 
-    final_features = np.array([[num_robots, hour, num_days]])
-    prediction = model2.predict(final_features)
+        output = round(float(prediction[0]), 2)
 
-    output = round(float(prediction[0]), 2)
-
-    return jsonify({"prediction": output})  
+        return jsonify({"prediction": output})  
+    except Exception as e:
+        return jsonify({"message": f"Prediction error: {str(e)}"}), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
