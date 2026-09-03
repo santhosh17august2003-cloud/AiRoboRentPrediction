@@ -58,7 +58,7 @@ function HomePage() {
     <div>
       <div>
         <h1 id="header">Robot Prediction</h1>
-        <button onClick={handleLogout} id="loginbutton" style={{ border: "none", cursor: "pointer", backgroundColor: "#ff4d4d" }}>
+        <button onClick={handleLogout} id="logoutbutton">
           Logout
         </button>
       </div>

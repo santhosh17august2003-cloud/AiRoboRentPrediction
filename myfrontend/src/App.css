@@ -156,6 +156,28 @@ body {
   background-color: #00b3a4;
 }
 
+#logoutbutton {
+  position: fixed;
+  top: 8px;
+  right: 15px;
+  border-radius: 12px;
+  color: white;
+  background-color: #ff4d4d;
+  width: 90px;
+  height: 34px;
+  text-align: center;
+  line-height: 34px;
+  font-weight: bold;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  z-index: 2000;
+}
+
+#logoutbutton:hover {
+  background-color: #cc0000;
+}
+
 #login, .register-title {
   text-align: center;
   font-size: 24px;
