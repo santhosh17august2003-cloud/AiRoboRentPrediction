@@ -1,11 +1,20 @@
 import os
+import sys
 import re
 import pickle
 import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pathlib import Path
-from api.db import collection
+
+# Add parent directory to sys.path for package imports
+BASE_DIR = Path(__file__).parent.parent
+sys.path.insert(0, str(BASE_DIR))
+
+try:
+    from api.db import collection
+except ImportError:
+    from db import collection
 
 app = Flask(__name__)
 CORS(
