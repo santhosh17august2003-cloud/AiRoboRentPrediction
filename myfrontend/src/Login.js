@@ -29,6 +29,9 @@ function Login(){
             const data = await response.json();
 
             if(response.ok){
+                if (data.token) {
+                    localStorage.setItem("token", data.token);
+                }
                 navigate("/home");
             }else{
                 setError(data.message);

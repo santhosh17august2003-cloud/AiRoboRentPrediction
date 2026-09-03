@@ -14,10 +14,12 @@ function App() {
   const handlepredict  = async (e) => {
     e.preventDefault();
 
+    const token = localStorage.getItem("token");
     const response = await fetch(apiUrl("/predict"),{
       method: "POST",
       headers:{
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       },
       body : JSON.stringify({
         num_robots: numRobots,
@@ -25,8 +27,12 @@ function App() {
         num_days: numDays,
       }),
     });
-     const data = await response.json();
-    setResult(data.prediction);
+    const data = await response.json();
+    if (response.ok) {
+      setResult(data.prediction);
+    } else {
+      alert(data.message || "Error during prediction");
+    }
   }  
   return (
     <Router>

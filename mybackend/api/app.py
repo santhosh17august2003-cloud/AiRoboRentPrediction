@@ -2,6 +2,9 @@ import os
 import sys
 import re
 import pickle
+import datetime
+import jwt
+from functools import wraps
 import numpy as np
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -21,11 +24,35 @@ CORS(
     app,
     resources={r"/*": {"origins": "*"}},
     methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "Authorization"],
 )
+
+SECRET_KEY = os.environ.get("JWT_SECRET", "super-secret-jwt-key-2026")
 
 MODEL_PATH = Path(__file__).parent.parent / "model.pkl"
 model2 = pickle.load(open(MODEL_PATH, "rb"))
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+
+        if not token:
+            return jsonify({"message": "Token is missing! Please login again."}), 401
+
+        try:
+            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            request.current_user = data["username"]
+        except jwt.ExpiredSignatureError:
+            return jsonify({"message": "Token has expired! Please login again."}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"message": "Invalid token! Please login again."}), 401
+
+        return f(*args, **kwargs)
+    return decorated
 
 @app.route("/", methods=["GET"])
 def index():
@@ -69,7 +96,7 @@ def register():
     except Exception as e:
         return jsonify({"message": f"Server error: {str(e)}"}), 500
 
-# Login API
+# Login API with JWT token generation
 @app.route("/login", methods=["POST"])
 def login():
     try:
@@ -86,13 +113,25 @@ def login():
         })
 
         if user:
-            return jsonify({"message": "Login successful"})
+            # Generate JWT token valid for 24 hours
+            exp_time = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
+            token = jwt.encode(
+                {"username": username, "exp": exp_time},
+                SECRET_KEY,
+                algorithm="HS256"
+            )
+            return jsonify({
+                "message": "Login successful",
+                "token": token
+            })
         else:
             return jsonify({"message": "Incorrect username or password"}), 401
     except Exception as e:
         return jsonify({"message": f"Server error: {str(e)}"}), 500
 
+# Protected Predict API
 @app.route("/predict", methods=["POST"])
+@token_required
 def predict():
     try:
         data = request.json or {}
