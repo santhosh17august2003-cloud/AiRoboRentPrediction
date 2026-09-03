@@ -12,11 +12,6 @@ function Register() {
   const [password, setPassword] = useState("");
 
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-  };
-
   const handleregister = async (e) => {
     e.preventDefault();
     const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;

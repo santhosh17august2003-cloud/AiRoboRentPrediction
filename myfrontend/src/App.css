@@ -173,27 +173,19 @@ body {
     max-height: 80vh;
   }
 
-  #robo1 {
-    top: 60px;
-    left: 0;
-    width: 90px;
-    opacity: 0.2;
-  }
-
-  #robo2 {
-    bottom: 40px;
-    right: 0;
-    width: 90px;
-    opacity: 0.2;
+  #robo1, #robo2 {
+    display: none;
   }
 
   #loginbutton, #registerbutton {
-    top: 7px;
-    right: 10px;
-    width: 80px;
-    height: 32px;
-    line-height: 32px;
+    top: 8px;
+    right: 12px;
+    width: 85px;
+    height: 34px;
+    line-height: 34px;
     font-size: 13px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   }
 
   #moral1, #prediction {
