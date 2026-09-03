@@ -13,7 +13,7 @@ function Register() {
 
 
   const handleLogout = () => {
-    localStorage.clear();   
+    localStorage.clear();
     navigate("/");
   };
 
@@ -56,22 +56,7 @@ function Register() {
   return (
     <>
       <div id="bgcolor">
-        <button
-          onClick={handleLogout}
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            padding: "8px 14px",
-            borderRadius: "10px",
-            border: "none",
-            backgroundColor: "#ff4d4d",
-            color: "white",
-            cursor: "pointer"
-          }}
-        >
-          Logout
-        </button>
+
 
         <div>
           <img src="img1.png.png" alt="Register" className="register-image" id="robo1" />
