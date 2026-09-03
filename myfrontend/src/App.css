@@ -190,28 +190,60 @@ body {
 @media screen and (max-width: 768px) {
   #container1, .register-container {
     width: 92%;
-    max-width: 350px;
-    padding: 20px;
-    max-height: 80vh;
+    max-width: 340px;
+    padding: 18px;
+    max-height: 82vh;
   }
 
-  #robo1, #robo2 {
-    display: none;
+  /* Show robots on mobile - smaller and faded so they don't block the form */
+  #robo1 {
+    display: block;
+    top: 55px;
+    left: 0;
+    width: 80px;
+    max-width: 20vw;
+    opacity: 0.3;
+  }
+
+  #robo2 {
+    display: block;
+    bottom: 30px;
+    right: 0;
+    width: 80px;
+    max-width: 20vw;
+    opacity: 0.3;
   }
 
   #loginbutton, #registerbutton {
     top: 8px;
-    right: 12px;
-    width: 85px;
-    height: 34px;
-    line-height: 34px;
-    font-size: 13px;
+    right: 10px;
+    width: 80px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 12px;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  #logoutbutton {
+    top: 8px;
+    right: 10px;
+    width: 80px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 12px;
+    border-radius: 10px;
+  }
+
+  #header {
+    font-size: 18px;
+    height: 46px;
+    line-height: 46px;
+    padding-right: 95px; /* prevent text overlap with logout button */
+    padding-left: 10px;
   }
 
   #moral1, #prediction {
     font-size: 13px;
-    bottom: 10px;
+    bottom: 8px;
   }
 }
