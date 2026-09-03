@@ -100,6 +100,10 @@ def predict():
     except Exception as e:
         return jsonify({"message": f"Prediction error: {str(e)}"}), 500
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    return jsonify({"message": f"Server error: {str(e)}"}), 500
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
