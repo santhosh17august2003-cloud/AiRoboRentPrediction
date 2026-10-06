@@ -81,7 +81,7 @@ function HomePage() {
 
           <button
             type="submit"
-            id="submit"
+            id="logsubmit"
             className="predict-btn"
             style={{
               backgroundColor: "#28a745",
