@@ -92,14 +92,21 @@ body {
   width: 100%;
 }
 
+#form #submit,
+#form input[type="submit"],
 #submit {
-  background: #28a745;
-  color: #ffffff;
+  background-color: #28a745 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer;
+  font-weight: bold;
 }
 
+#form #submit:hover,
+#form input[type="submit"]:hover,
 #submit:hover {
-  background: #218838;
-  color: #ffffff;
+  background-color: #218838 !important;
+  color: #ffffff !important;
 }
 
 #logsubmit:hover, .register-btn:hover {

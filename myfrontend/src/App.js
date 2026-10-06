@@ -79,7 +79,18 @@ function HomePage() {
           <label>Number of Days:</label><br />
           <input type="text" name="num_days" onChange={(e) => setNumDays(e.target.value)} required /><br />
 
-          <input type="submit" value="Predict" id="submit" />
+          <input
+            type="submit"
+            value="Predict"
+            id="submit"
+            style={{
+              backgroundColor: "#28a745",
+              color: "#ffffff",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: "bold"
+            }}
+          />
         </form>
       </div>
       <h3 id="prediction">{result ? `Robot Rent is: ${result}` : ""}</h3>
