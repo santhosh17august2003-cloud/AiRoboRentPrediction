@@ -14,10 +14,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
-try:
-    from api.db import collection
-except ImportError:
-    from db import collection
+# try:
+#     from api.db import collection
+# except ImportError:
+#     from db import collection
+from api.db import collection
 
 app = Flask(__name__)
 CORS(
