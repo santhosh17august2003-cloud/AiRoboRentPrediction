@@ -92,7 +92,17 @@ body {
   width: 100%;
 }
 
-#submit:hover, #logsubmit:hover, .register-btn:hover {
+#submit {
+  background: #28a745;
+  color: #ffffff;
+}
+
+#submit:hover {
+  background: #218838;
+  color: #ffffff;
+}
+
+#logsubmit:hover, .register-btn:hover {
   background: #00b3a4;
   color: #fff;
 }
