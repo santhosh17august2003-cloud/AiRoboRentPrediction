@@ -1,21 +1,3 @@
-# import os
-# from pymongo import MongoClient
-
-# def get_collection():
-#     mongo_uri = os.environ.get("MONGODB_URI", "mongodb://localhost:27017/")
-#     client = MongoClient(mongo_uri)
-#     db = client["robot_db"]
-#     return db["users"]
-
-# class CollectionProxy:
-#     def find_one(self, *args, **kwargs):
-#         return get_collection().find_one(*args, **kwargs)
-        
-#     def insert_one(self, *args, **kwargs):
-#         return get_collection().insert_one(*args, **kwargs)
-
-# collection = CollectionProxy()
-
 import os
 import json
 import uuid
@@ -26,13 +8,18 @@ def get_connection():
     """
     Connect to Aiven MySQL
     """
+    host = (os.environ.get("MYSQL_HOST") or "").strip()
+    port = int(os.environ.get("MYSQL_PORT", 3306))
+    user = (os.environ.get("MYSQL_USER") or "").strip()
+    password = (os.environ.get("MYSQL_PASSWORD") or "").strip()
+    database = (os.environ.get("MYSQL_DATABASE") or "defaultdb").strip()
 
     connection = mysql.connector.connect(
-        host=os.environ.get("MYSQL_HOST"),
-        port=int(os.environ.get("MYSQL_PORT", 3306)),
-        user=os.environ.get("MYSQL_USER"),
-        password=os.environ.get("MYSQL_PASSWORD"),
-        database=os.environ.get("MYSQL_DATABASE"),
+        host=host,
+        port=port,
+        user=user,
+        password=password,
+        database=database,
 
         # Aiven requires SSL
         ssl_disabled=False,
@@ -43,30 +30,34 @@ def get_connection():
     return connection
 
 
+TABLE_NAME = "robot_users"
+
+
 def create_table():
     """
-    Create users table if it doesn't already exist.
+    Create robot_users table if it doesn't already exist.
     """
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
 
-    connection = get_connection()
-    cursor = connection.cursor()
+        cursor.execute(f"""
+            CREATE TABLE IF NOT EXISTS {TABLE_NAME} (
+                id VARCHAR(100) PRIMARY KEY,
+                data JSON NOT NULL
+            )
+        """)
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id VARCHAR(100) PRIMARY KEY,
-            data JSON NOT NULL
-        )
-    """)
-
-    connection.commit()
-
-    cursor.close()
-    connection.close()
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except Exception as e:
+        print(f"[Warning] Could not initialize table {TABLE_NAME}: {e}")
 
 
 class CollectionProxy:
     """
-    This class keeps the old MongoDB-style functions
+    This class keeps the MongoDB-style functions
     so the rest of your application can continue using:
 
         collection.find_one()
@@ -74,70 +65,55 @@ class CollectionProxy:
     """
 
     def find_one(self, *args, **kwargs):
-
         connection = get_connection()
         cursor = connection.cursor(dictionary=True)
-
-        # Example:
-        # collection.find_one({"email": "abc@gmail.com"})
 
         query_data = args[0] if args else kwargs
 
         if not query_data:
-
-            cursor.execute("""
+            cursor.execute(f"""
                 SELECT id, data
-                FROM users
+                FROM {TABLE_NAME}
                 LIMIT 1
             """)
-
         else:
+            # Build WHERE condition for all queried fields (e.g. username AND password)
+            where_clauses = []
+            params = []
+            for key, val in query_data.items():
+                where_clauses.append("JSON_UNQUOTE(JSON_EXTRACT(data, %s)) = %s")
+                params.append(f"$.{key}")
+                params.append(str(val))
 
-            key = list(query_data.keys())[0]
-            value = query_data[key]
-
-            json_path = "$." + key
-
-            cursor.execute(
-                """
+            sql = f"""
                 SELECT id, data
-                FROM users
-                WHERE JSON_UNQUOTE(
-                    JSON_EXTRACT(data, %s)
-                ) = %s
+                FROM {TABLE_NAME}
+                WHERE {" AND ".join(where_clauses)}
                 LIMIT 1
-                """,
-                (json_path, str(value))
-            )
+            """
+            cursor.execute(sql, tuple(params))
 
         result = cursor.fetchone()
-
         cursor.close()
         connection.close()
 
         if result:
-
             data = json.loads(result["data"])
-
-            # MongoDB-like _id
             data["_id"] = result["id"]
-
             return data
 
         return None
 
     def insert_one(self, *args, **kwargs):
-
         data = args[0] if args else kwargs
-
         document_id = str(uuid.uuid4())
 
         connection = get_connection()
         cursor = connection.cursor()
 
         cursor.execute(
-            """
-            INSERT INTO users (id, data)
+            f"""
+            INSERT INTO {TABLE_NAME} (id, data)
             VALUES (%s, %s)
             """,
             (
@@ -147,7 +123,6 @@ class CollectionProxy:
         )
 
         connection.commit()
-
         cursor.close()
         connection.close()
 
@@ -159,7 +134,5 @@ class CollectionProxy:
 # Create table automatically
 create_table()
 
-
-# Keep the same variable name
-# used by the existing application
+# Keep the same variable name used by the application
 collection = CollectionProxy()
